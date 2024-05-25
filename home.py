@@ -1,9 +1,7 @@
 import streamlit as st
 
-url = 'https://www.streamlit.io/'
 
-st.title('Home')
+st.title('Dynamic Website')
 
-st.write('This is going to be our static website.')
+st.write('This is going to be our dynamic website.')
 
-st.page_link(url, label='Dynamic Website', icon="🚨")
