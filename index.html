@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>stlite app</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.52.1/build/stlite.css"
-    />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.52.1/build/stlite.css" />
+</head>
+
+<body>
     <div id="root"></div>
     <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.52.1/build/stlite.js"></script>
     <script>
-      stlite.mount(
-        `
-import streamlit as st
+        stlite.mount(
+            `
+        import streamlit as st
+import webbrowser
 
-name = st.text_input('Your name')
-st.write("Hello,", name or "world")
+url = 'https://www.streamlit.io/'
+
+st.title('Home')
+
+st.write('This is going to be our static website.')
+
+if st.button('Go to Panel'):
+    st.write('Redirecting to Panel...')
+    webbrowser.open_new_tab(url)
 `,
-        document.getElementById("root")
-      );
+            document.getElementById("root")
+        );
     </script>
-  </body>
+</body>
+
 </html>
