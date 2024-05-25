@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install Mediapipe dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     ffmpeg \
     build-essential \
     cmake \
@@ -36,10 +36,8 @@ USER portal_user
 # Install Python dependencies
 RUN pip install --user -r /app/requirements.txt
 
-# Default command to start the container
-CMD ["/bin/bash"]
-
 # Set up the environment for display and video device access
 ENV DISPLAY=:0
-RUN echo "export DISPLAY=:0" >> /home/portal_user/.bashrc
-RUN echo "xhost +" >> /home/portal_user/.bashrc
+
+# Default command to start the container
+CMD ["/bin/bash"]
