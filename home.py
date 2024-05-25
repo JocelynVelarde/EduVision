@@ -54,7 +54,7 @@ col6.write("2. Example")
 
 st.divider()
 st.subheader(":green[Get Started]")
-st.page_link("pages/Instructions.py", label="See Instructions 🚀")
+st.page_link("pages/instructions.py", label="See Instructions 🚀")
 
 st.divider()
 
