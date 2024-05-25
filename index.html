@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>stlite app</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.54.2/build/stlite.css"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.54.2/build/stlite.js"></script>
+    <script>
+stlite.mount(
+  {
+    requirements: [],
+    entrypoint: "streamlit_app.py",
+    files: {
+"streamlit_app.py": `import streamlit as st
+from PIL import Image
+
+st.title("stlite sharing: Serverless Streamlit app platform")
+
+image = Image.open('data/logo.png')
+st.image(image, caption='stlite logo')
+
+st.markdown("""
+### stlite
+**stlite** is a port of _Streamlit_ to Wasm, powered by Pyodide,
+that runs completely on web browsers.
+
+The official repository is [🔗 here](https://github.com/whitphx/stlite).
+
+If you are new to Streamlit, read the Getting Started tutorial [🔗 here](https://docs.streamlit.io/library/get-started) first
+(don't worry, it only takes a few minutes 👍),
+but **you can skip the "Installation" section** because you are here 😎.
+You can start writing code right out of the box on this online editor 👈!
+(If there is not an editor on the left, you are seeing the shared app.
+Navigate to the editor mode: https://edit.share.stlite.net/)
+
+### stlite sharing
+This page is built on **stlite sharing**, an online code editor & sharing platform for _stlite_. \\\\
+If you see the editor and preview panes side by side, you are in the editor mode, https://edit.share.stlite.net/. \\\\
+If you see only this Streamlit app, you are in the sharing mode, https://share.stlite.net/.
+(If you want to edit the app, please go to the [editor mode](https://edit.share.stlite.net/)!)
+
+The app code and data are encoded into the URL as a hash like \`https://share.stlite.net/#!ChBz...\`,
+so you can save, share and restore the app only this the URL.
+If you are on the editor page, click the "Open App" link on the top right toolbar to see the standalone app!
+
+You can switch the editor and sharing modes by replacing the host naem in the URL,
+\`edit.share.stlite.net\` and \`share.stlite.net\`.
+
+### Tell your story!
+When you create some apps with _stlite_, please share it!
+All you need to do is copy and paste the URL 👍
+
+* **stlite** GitHub Discussions [🔗 here](https://github.com/whitphx/stlite/discussions/categories/show-and-tell)
+* Streamlit community forum [🔗 here](https://discuss.streamlit.io/)
+""")
+
+st.header("Streamlit Component Samples")
+st.markdown("""
+    All these features are working on your browser!
+""")
+
+name = st.text_input("Your name?")
+st.write("Hello,", name or "world", "!")
+
+value = st.slider("Value?")
+st.write("The slider value is", value)
+
+import numpy as np
+import pandas as pd
+
+st.subheader("Chart sample")
+chart_data = pd.DataFrame(
+    np.random.randn(20, 3),
+    columns=['a', 'b', 'c'])
+
+tab1, tab2, tab3 = st.tabs(["Line chart", "Area chart", "Bar chart"])
+with tab1:
+    st.line_chart(chart_data)
+with tab2:
+    st.area_chart(chart_data)
+with tab3:
+    st.bar_chart(chart_data)
+
+st.subheader("DataFrame sample")
+df = pd.DataFrame(
+   np.random.randn(50, 20),
+   columns=('col %d' % i for i in range(20)))
+
+st.dataframe(df)
+
+st.subheader("Camera input")
+st.info("Don't worry! The photo data is processed on your browser and never uploaded to any remote servers.")
+enable_camera_input = st.checkbox("Use the camera input")
+if enable_camera_input:
+    picture = st.camera_input("Take a picture")
+
+    if picture:
+        st.image(picture)
+`,
+"data/logo.png": Ut("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"),
+"pages/🎈_subpage.py.py": `import streamlit as st
+
+st.title("Sub page")
+
+st.markdown("""
+_stlite_ supports **Multi Page Apps (MPA)**, of course!
+
+Create \`pages/*.py\` like this file to add new pages.
+
+If you are new to MPA, read the official tutorial about it [🔗 here](https://docs.streamlit.io/library/get-started/multipage-apps)
+""")
+`,
+
+},
+  },
+  document.getElementById("root")
+)
+
+function Ut(e){const t=window.atob(e),n=t.length,a=new Uint8Array(n);for(let r=0;r<n;r++)a[r]=t.charCodeAt(r);return a}
+    </script>
+  </body>
+  <!-- Generated from stlite sharing (https://edit.share.stlite.net/), and the source version is d8d376bc13f01aac8546fe576cb62efa84921ef1 -->
+</html>
