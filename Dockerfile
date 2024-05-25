@@ -1,43 +1,30 @@
-# Use the Ultralytics Jetson image as the base image
+# Use the ultralytics image as the base
 FROM ultralytics/ultralytics:latest-jetson
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the application files
+# Copy the current directory contents into the container at /app
 COPY . /app
 
-# Install Mediapipe dependencies
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    ffmpeg \
-    build-essential \
-    cmake \
-    protobuf-compiler \
-    libopencv-dev \
-    libopencv-core-dev \
-    libopencv-highgui-dev \
-    libopencv-imgproc-dev \
-    libopencv-video-dev \
-    libopencv-calib3d-dev \
-    python3-opencv
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y x11-xserver-utils && \
+    rm -rf /var/lib/apt/lists/*
 
-# Clone Mediapipe repository and build
-RUN git clone https://github.com/google/mediapipe.git /mediapipe
-WORKDIR /mediapipe
-RUN sed -i -e 's/cudnn_version == "8.2"/cudnn_version >= "8.2"/' third_party/gpus/cuda/BUILD.tpl
-RUN sed -i -e 's/cudnn_version == "8.2"/cudnn_version >= "8.2"/' WORKSPACE
-RUN bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS mediapipe/examples/desktop/face_detection:face_detection_gpu
-
-# Create a user and set permissions
+# Add a new user and change ownership of the app directory
 RUN useradd -m portal_user
-RUN chown -R portal_user:portal_user /app /mediapipe
+RUN chown -R portal_user:portal_user /app
 USER portal_user
 
 # Install Python dependencies
-RUN pip install --user -r /app/requirements.txt
+RUN pip install --user -r requirements.txt
 
-# Set up the environment for display and video device access
+# Set environment variables
 ENV DISPLAY=:0
 
-# Default command to start the container
-CMD ["/bin/bash"]
+# Allow connections to the X server from any host
+RUN xhost +
+
+# Define the command to run the face detection example
+CMD ["/bin/bash", "-c", "GLOG_logtostderr=1 bazel-bin/mediapipe/examples/desktop/face_detection/face_detection_gpu --calculator_graph_config_file=mediapipe/graphs/face_detection/face_detection_mobile_gpu.pbtxt"]
