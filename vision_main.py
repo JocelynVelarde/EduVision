@@ -2,20 +2,21 @@ import cv2
 import numpy as np
 import threading
 import time
-from deepface import DeepFace
-from ThreadManager import ThreadManager
-from AiManager import AiManager
-
-#manager = ThreadManager()
-
 import queue
+
+import random
+
+from deepface import DeepFace
+from AiManager import AiManager
+from DataManager import DataManager
+
+mongo = DataManager()
+
+
+
 
 aimanager = AiManager(5)
 
-
-
-#w, h = 360, 200
-#fbRange = [6200, 6800]
 
 shared_queue = queue.Queue()
 
@@ -53,11 +54,13 @@ def process_frame(frame):
     print("Processing frame in a separate thread")
 
 def data_process(dic):
+    print("Sending data in other frame")
 
+    random_number = random.randint(1, 50)
 
-    # Código de deepface
-    print("Processing data separate thread")
-    print(dic)
+    if random_number == 1:
+        mongo.post_data(dic)
+
 
 
 if __name__ == '__main__':
