@@ -14,7 +14,7 @@ st.title('Instructions')
 
 st.write('Welcome to EduVision, here is where your journey starts!')
 
-st.wrtie('Wanna know how to use it?')
+st.write('Wanna know how to use it?')
 
 col1, col2  = st.columns(2)
 
