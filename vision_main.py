@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import threading
 import time
-
+from deepface import DeepFace
 from ThreadManager import ThreadManager
 from AiManager import AiManager
 
@@ -12,11 +12,28 @@ aimanager = AiManager(5)
 
 
 
-w, h = 360, 200
-fbRange = [6200, 6800]
+#w, h = 360, 200
+#fbRange = [6200, 6800]
 
 
 def process_frame(frame):
+    h, w = frame.shape[:2]
+    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+    aimanager.face_detector.setInput(blob)
+    detections = aimanager.face_detector.forward()
+
+    for i in range(detections.shape[2]):
+        confidence = detections[0, 0, i, 2]
+        if confidence > 0.5:
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (x, y, x1, y1) = box.astype("int")
+            face_roi = frame[y:y1, x:x1]
+
+            # Perform emotion analysis on the face ROI
+            result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
+            # Determine the dominant emotion
+            emotion = result[0]['dominant_emotion']
+            print(emotion)
     # Código de deepface
     print("Processing frame in a separate thread")
 
