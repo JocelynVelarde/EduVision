@@ -22,3 +22,7 @@ class DataManager:
 
         except Exception as e:
             print(e)
+
+    def get_data(self):
+        list = self.db.educaation.find()
+        return list

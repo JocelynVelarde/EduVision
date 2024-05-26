@@ -11,16 +11,20 @@ client = pymongo.MongoClient(uri)
 db = client.lince_hack
 collection = db.educaation
 
+list = db.educaation.find()
+
+for document in list: 
+    print(document)
 
 mydict = { "name": "John", "address": "Highway 37" }
 
 
 # Send a ping to confirm a successful connection
-try:
-    x = collection.insert_one(mydict)
+#try:
+    #x = collection.insert_one(mydict)
     
-except Exception as e:
-    print(e)
+#except Exception as e:
+    #print(e)
 
 
 

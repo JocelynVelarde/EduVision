@@ -12,9 +12,6 @@ from DataManager import DataManager
 
 mongo = DataManager()
 
-
-
-
 aimanager = AiManager(5)
 
 
