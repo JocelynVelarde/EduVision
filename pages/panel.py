@@ -3,9 +3,14 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from DataManager import DataManager
+from datetime import datetime
 from algorithms.gpt4o.pptx_genai import generate_slide_titles, generate_slide_content, create_presentation
 
 mongo = DataManager()
+
+def unix_converter(unix_timestamp):
+    dt_object = datetime.fromtimestamp(unix_timestamp)
+    return dt_object
 
 st.set_page_config(
         page_title="EduVision",
@@ -15,6 +20,10 @@ st.set_page_config(
 st.title('View Classroom Metrics')
 
 st.divider()
+
+st.subheader(':green[Emotions Over Time (Unix Timestamp)]')
+st.write("Use our unix converter to find a specific time range.")
+
 
 data = mongo.get_data()
 
@@ -42,6 +51,30 @@ emotions = ["focused", "distracted", "happy", "sad", "angry", "surprise", "fear"
 # Plot a bar graph for each emotion
 for emotion in emotions:
     st.subheader(f'{emotion.capitalize()} Over Time')
-    df[emotion].plot(kind='bar')
-    st.pyplot(plt)
-    plt.clf()
+    st.bar_chart(df[emotion])
+
+st.subheader(":green[Unix Timestamp Data Converter]")
+unix_timestamp = st.number_input("Enter a Unix Timestamp", value=0)
+
+if st.button("Convert to Date and Time"):
+    st.write(unix_converter(unix_timestamp))
+
+st.divider()
+st.subheader(":green[Raw Data of Emotions and Attention Timespan]")
+
+st.dataframe(df)
+
+st.divider()
+st.subheader(":green[Visualization of concentration span]")
+
+import matplotlib.pyplot as plt
+
+# Calculate the number of people distracted vs not distracted
+attention_data = df[['distracted', 'focused']].sum()
+
+# Create a pie chart
+fig, ax = plt.subplots()
+ax.pie(attention_data, labels=attention_data.index, autopct='%1.1f%%')
+ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+st.pyplot(fig)
