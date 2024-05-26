@@ -1,4 +1,3 @@
 python-pptx
 openai
-tkinter
 pymongo
