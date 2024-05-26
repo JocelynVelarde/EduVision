@@ -1,5 +1,5 @@
 python-pptx
-cv2
+opencv-python
 numpy
 deepface
 openai
