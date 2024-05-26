@@ -1,7 +1,15 @@
 import cv2
 from deepface import DeepFace
+import numpy as np
 
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+# Load the pre-trained SSD model and the prototxt file
+face_detector = cv2.dnn.readNetFromCaffe(
+    'deploy.prototxt.txt',
+    'res10_300x300_ssd_iter_140000.caffemodel'
+)
+
+# Initialize the video capture
 cap = cv2.VideoCapture(0)
 
 emotion_counts = {
@@ -14,46 +22,51 @@ emotion_counts = {
     'disgust': 0
 }
 
-frame_count = 0
-
 while True:
     ret, frame = cap.read()
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
+    if not ret:
+        break
 
+    # Prepare the frame for the face detector
+    h, w = frame.shape[:2]
+    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+    face_detector.setInput(blob)
+    detections = face_detector.forward()
 
-    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    for i in range(detections.shape[2]):
+        confidence = detections[0, 0, i, 2]
+        if confidence > 0.5:
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (x, y, x1, y1) = box.astype("int")
+            face_roi = frame[y:y1, x:x1]
 
-    emotion_list = []
-    for (x, y, w, h) in faces:
-        face_roi = rgb_frame[y:y + h, x:x + w]
-        # Perform emotion analysis on the face ROI
-        result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
-        # Determine the dominant emotion
-        emotion = result[0]['dominant_emotion']
-        if emotion in emotion_counts:
-            emotion_counts[emotion] += 1
+            # Perform emotion analysis on the face ROI
+            result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
+            # Determine the dominant emotion
+            emotion = result[0]['dominant_emotion']
+            if emotion in emotion_counts:
+                emotion_counts[emotion] += 1
 
+            # Draw rectangle around face and label with predicted emotion
+            cv2.rectangle(frame, (x, y), (x1, y1), (0, 0, 255), 2)
+            cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
-        # Draw rectangle around face and label with predicted emotion
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-
-        # Draw "T" on the face
-        # Vertical line
-        cv2.line(frame, (x + w // 2, y), (x + w // 2, y + h), (0,255,0), 2)
-        # Horizontal line
-        cv2.line(frame, (x, y + h // 2), (x + w, y + h // 2),(0,255,0), 2)
-    
+            # Draw "T" on the face
+            # Vertical line
+            cv2.line(frame, ((x + x1) // 2, y), ((x + x1) // 2, y1), (0, 255, 0), 2)
+            # Horizontal line
+            cv2.line(frame, (x, (y + y1) // 2), (x1, (y + y1) // 2), (0, 255, 0), 2)
 
     # Display the resulting frame
-    cv2.imshow('Real-time Face Detection', frame)
-    
+    cv2.imshow('Real-time Emotion Detection', frame)
+
     # Press 'q' to exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         print(emotion_counts)
         break
 
+cap.release()
+cv2.destroyAllWindows()
 
 cap.release()
 cv2.destroyAllWindows()
