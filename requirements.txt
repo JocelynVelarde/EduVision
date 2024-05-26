@@ -1,0 +1,7 @@
+python-pptx
+opencv-python
+numpy
+deepface
+openai
+pymongo
+matplotlib
