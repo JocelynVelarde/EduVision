@@ -1,5 +1,7 @@
 import streamlit as st
 from openai import OpenAI
+from algorithms.gpt4o.simple_text import ask_chat
+from algorithms.gpt4o.image_process import create_lesson_plan
 
 st.set_page_config(
         page_title="EduVision",
@@ -7,12 +9,13 @@ st.set_page_config(
 )
 
 submit = False
+submit_photo = False
 
 st.title('Create a Study Plan with EduVision')
 
 st.divider()
 
-st.subheader(':green[Fill out the following fields to start generating]')
+st.subheader(':green[Fill out the fields to start generating]')
 
 with st.form("Study Plan Form"):
    select_course = st.selectbox(
@@ -23,39 +26,30 @@ with st.form("Study Plan Form"):
                                          "1 month", "2 months", "3 months"])
    select_hours_per_day = st.selectbox(
        "Select time per class", ["40 minutes", "1 hour", "2 hours", "3 hours"])
+    
 
+   
    submitted = st.form_submit_button("Generate")
+
    if submitted:
       submit = True
       st.warning("Generating study plan...")
+      st.write(ask_chat(select_course, select_course_level, select_duration_course, select_hours_per_day))
 
-if submit:
-   client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-   if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"
+st.divider()
 
-    if "messages" not in st.session_state:
-     st.session_state.messages = []
+st.subheader(':green[Upload a picture with class content to start generating]')
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+with st.form("Study Plan Image Form"):
+   input_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    
 
-    if prompt := st.chat_input("What is up?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+   
+   submitted = st.form_submit_button("Generate")
 
-        with st.chat_message("assistant"):
-                stream = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[
-                        {"role": m["role"], "content": m["content"]}
-                        for m in st.session_state.messages
-                ],
-                stream=True,
-                )
-                response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-      
+   if submitted:
+      submit_photo = True
+      st.warning("Generating study plan...")
+      result = create_lesson_plan(input_image)
+      st.write(result)
