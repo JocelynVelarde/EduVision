@@ -28,6 +28,8 @@ if __name__ == '__main__':
 
     #manager.start_threads()
 
+    bboxes = None
+
     while True:
 
         p, img = cap.read()
@@ -42,13 +44,17 @@ if __name__ == '__main__':
 
         if frame_counter_haar == 5:
 
-            img, info = aimanager.findFace(img)
+            bboxes = aimanager.findFace(img)
 
             frame_counter_haar = 0
 
         if frame_counter_deep == 20:
             threading.Thread(target=process_frame, args=(img.copy(),)).start()
             frame_counter_deep = 0
+
+        if bboxes is not None:
+            for (x, y, w, h) in bboxes:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         cv2.imshow("Output", img)
         keyCode = cv2.waitKey(1)
