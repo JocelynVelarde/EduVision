@@ -21,12 +21,12 @@ def process_frame(frame):
 
 if __name__ == '__main__':
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     frame_counter_haar = 0
     frame_counter_deep = 0
 
-    manager.start_threads()
+    #manager.start_threads()
 
     while True:
 
