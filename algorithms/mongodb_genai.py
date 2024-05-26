@@ -19,7 +19,6 @@ mydict = { "name": "John", "address": "Highway 37" }
 try:
     x = collection.insert_one(mydict)
     
-
 except Exception as e:
     print(e)
 
