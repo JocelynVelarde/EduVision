@@ -1,4 +1,4 @@
-from tkinter import Image
+
 from openai import OpenAI 
 import streamlit as st
 
