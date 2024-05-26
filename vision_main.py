@@ -39,8 +39,8 @@ if __name__ == '__main__':
 
     bboxes = None
 
-    focus = 0
-    distracted = 0
+    fo = 0
+    dis = 0
 
     while True:
 
@@ -59,22 +59,14 @@ if __name__ == '__main__':
         if frame_counter_haar == 5:
 
             bboxes, fo, dis = aimanager.findFace(img)
-
-            focus += fo
-            distracted += dis
-
             frame_counter_haar = 0
 
         if frame_counter_deep == 20:
             threading.Thread(target=process_frame, args=(img.copy(),)).start()
-            average_focus = int(focus/5)
-            average_dis = aimanager.students - average_focus
 
-            data = {"timestamp": int(time.time()), "focused": average_focus, "distracted": average_dis}
+            data = {"timestamp": int(time.time()), "focused": fo, "distracted": dis}
 
             threading.Thread(target=data_process, args=(data,)).start()
-
-            focus, distracted = 0, 0
 
             frame_counter_deep = 0
 
