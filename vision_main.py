@@ -8,6 +8,8 @@ from AiManager import AiManager
 
 #manager = ThreadManager()
 
+import queue
+
 aimanager = AiManager(5)
 
 
@@ -15,6 +17,7 @@ aimanager = AiManager(5)
 #w, h = 360, 200
 #fbRange = [6200, 6800]
 
+shared_queue = queue.Queue()
 
 def process_frame(frame):
     h, w = frame.shape[:2]
@@ -45,7 +48,8 @@ def process_frame(frame):
             e[result[0]['dominant_emotion']] += 1
 
     # Código de deepface
-    print(e)
+    shared_queue.put(e)
+
     print("Processing frame in a separate thread")
 
 def data_process(dic):
@@ -93,8 +97,21 @@ if __name__ == '__main__':
             threading.Thread(target=process_frame, args=(img.copy(),)).start()
 
             data = {"timestamp": int(time.time()), "focused": fo, "distracted": dis}
+            data_fromthread = shared_queue.get()
 
-            threading.Thread(target=data_process, args=(data,)).start()
+            combined_dict = {}
+
+
+            for key, value in data.items():
+                combined_dict[key] = value
+
+
+            for key, value in data_fromthread.items():
+                combined_dict[key] = value
+
+
+
+            threading.Thread(target=data_process, args=(combined_dict,)).start()
 
             frame_counter_deep = 0
 
