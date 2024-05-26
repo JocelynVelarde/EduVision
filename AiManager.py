@@ -1,11 +1,10 @@
 import cv2
 
-
 class AiManager:
 
     def __init__(self, st):
         self.students = st
-        self.faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        self.faceCascade = cv2.CascadeClassifier("utils/haarcascade_frontalface_default.xml")
         self.emotion_counts = {
             'happy': 0,
             'sad': 0,
@@ -16,8 +15,8 @@ class AiManager:
             'disgust': 0
         }
         # Path to the model files
-        self.prototxt_path = 'deploy.prototxt.txt'
-        self.caffemodel_path = 'res10_300x300_ssd_iter_140000.caffemodel'
+        self.prototxt_path = 'utils/deploy.prototxt.txt'
+        self.caffemodel_path = 'utils/res10_300x300_ssd_iter_140000.caffemodel'
 
         # Load the pre-trained SSD model and the prototxt file
         self.face_detector = cv2.dnn.readNetFromCaffe(self.prototxt_path, self.caffemodel_path)

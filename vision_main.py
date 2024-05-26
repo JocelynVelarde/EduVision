@@ -56,10 +56,12 @@ def process_frame(frame):
 def data_process(dic):
     print("Sending data in other frame")
 
-    random_number = random.randint(1, 50)
+    random_number = random.randint(1, 15)
 
     if random_number == 1:
         mongo.post_data(dic)
+        print("Data sent to MongoDB")
+    print(dic)
 
 
 

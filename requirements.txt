@@ -1,3 +1,6 @@
 python-pptx
+cv2
+numpy
+deepface
 openai
 pymongo
