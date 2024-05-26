@@ -24,9 +24,9 @@ class AiManager:
             cy = y + h // 2
             area = w * h
 
-            cv2.circle(img, (cx, cy), 5, (0, 255, 0), cv2.FILLED)
-            myFaceListC.append([cx, cy])
-            myFaceListArea.append(area)
+            #cv2.circle(img, (cx, cy), 5, (0, 255, 0), cv2.FILLED)
+            #myFaceListC.append([cx, cy])
+            #myFaceListArea.append(area)
 
         return bboxes
 

@@ -40,7 +40,7 @@ if __name__ == '__main__':
         frame_counter_haar += 1
         frame_counter_deep += 1
 
-        img = cv2.resize(img, (w, h))
+        #img = cv2.resize(img, (w, h))
 
         if frame_counter_haar == 5:
 
