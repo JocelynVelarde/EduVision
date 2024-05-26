@@ -22,6 +22,16 @@ def process_frame(frame):
     aimanager.face_detector.setInput(blob)
     detections = aimanager.face_detector.forward()
 
+    e = {
+            'happy': 0,
+            'sad': 0,
+            'angry': 0,
+            'surprise': 0,
+            'fear': 0,
+            'neutral': 0,
+            'disgust': 0
+        }
+
     for i in range(detections.shape[2]):
         confidence = detections[0, 0, i, 2]
         if confidence > 0.5:
@@ -32,9 +42,10 @@ def process_frame(frame):
             # Perform emotion analysis on the face ROI
             result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
             # Determine the dominant emotion
-            emotion = result[0]['dominant_emotion']
-            print(emotion)
+            e[result[0]['dominant_emotion']] += 1
+
     # Código de deepface
+    print(e)
     print("Processing frame in a separate thread")
 
 def data_process(dic):
