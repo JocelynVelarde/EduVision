@@ -16,7 +16,6 @@ emotion_counts = {
 }
 
 frame_count = 0
-process_every_n_frames = 1
 
 while True:
     ret, frame = cap.read()
@@ -26,7 +25,7 @@ while True:
 
     faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-    #emotion_list = []
+    emotion_list = []
     for (x, y, w, h) in faces:
         face_roi = rgb_frame[y:y + h, x:x + w]
         # Perform emotion analysis on the face ROI
@@ -34,23 +33,20 @@ while True:
         print(result[0])
         # Determine the dominant emotion
         emotion = result[0]['dominant_emotion']
+        emotion_list.append(emotion)
 
-        #emotion_list.append(emotion)
         # Update the count for the detected emotion
-        #if emotion in emotion_counts:
-        #    emotion_counts[emotion] += 1
         # Draw rectangle around face and label with predicted emotion
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     
-    #print(emotion_list)
+    print(emotion_list)
 
     # Display the resulting frame
     cv2.imshow('Real-time Emotion Detection', frame)
     
     # Press 'q' to exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        #print(emotion_counts)
         break
 
 
