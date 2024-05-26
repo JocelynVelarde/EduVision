@@ -120,9 +120,10 @@ if __name__ == '__main__':
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         cv2.imshow("Output", img)
-        keyCode = cv2.waitKey(1)
-        if cv2.getWindowProperty("Output", cv2.WND_PROP_VISIBLE) < 1:
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+
     #manager.wait_for_threads()
+    cap.release()
     cv2.destroyAllWindows()
