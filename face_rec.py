@@ -4,7 +4,6 @@ from deepface import DeepFace
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 cap = cv2.VideoCapture(0)
 
-# Initialize emotion counts
 emotion_counts = {
     'happy': 0,
     'sad': 0,
@@ -30,25 +29,53 @@ while True:
         face_roi = rgb_frame[y:y + h, x:x + w]
         # Perform emotion analysis on the face ROI
         result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
-        print(result[0])
         # Determine the dominant emotion
         emotion = result[0]['dominant_emotion']
-        emotion_list.append(emotion)
+        if emotion in emotion_counts:
+            emotion_counts[emotion] += 1
 
-        # Update the count for the detected emotion
+
         # Draw rectangle around face and label with predicted emotion
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+        # Draw "T" on the face
+        # Vertical line
+        cv2.line(frame, (x + w // 2, y), (x + w // 2, y + h), (0,255,0), 2)
+        # Horizontal line
+        cv2.line(frame, (x, y + h // 2), (x + w, y + h // 2),(0,255,0), 2)
     
-    print(emotion_list)
 
     # Display the resulting frame
-    cv2.imshow('Real-time Emotion Detection', frame)
+    cv2.imshow('Real-time Face Detection', frame)
     
     # Press 'q' to exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        print(emotion_counts)
         break
 
 
 cap.release()
 cv2.destroyAllWindows()
+
+
+
+
+"""
+{
+'emotion': {'angry': 18.126073479652405, 
+             'disgust': 0.0254500366281718, 
+             'fear': 42.87395775318146, 
+             'happy': 0.29395208694040775, 
+             'sad': 21.102583408355713, 
+             'surprise': 0.044106628047302365, 
+             'neutral': 17.53387302160263}, 
+'dominant_emotion': 'fear', 
+'region': {'x': 14, 
+           'y': 16, 
+           'w': 212, 
+           'h': 212, 
+           'left_eye': (166, 93), 
+           'right_eye': (81, 88)}, 
+'face_confidence': 0.96}
+"""
