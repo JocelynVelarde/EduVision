@@ -1,13 +1,15 @@
 import cv2
 import numpy as np
 import threading
+import time
 
 from ThreadManager import ThreadManager
 from AiManager import AiManager
 
 #manager = ThreadManager()
 
-aimanager = AiManager()
+aimanager = AiManager(5)
+
 
 
 w, h = 360, 200
@@ -17,6 +19,13 @@ fbRange = [6200, 6800]
 def process_frame(frame):
     # Código de deepface
     print("Processing frame in a separate thread")
+
+def data_process(dic):
+
+
+    # Código de deepface
+    print("Processing data separate thread")
+    print(dic)
 
 
 if __name__ == '__main__':
@@ -30,6 +39,9 @@ if __name__ == '__main__':
 
     bboxes = None
 
+    focus = 0
+    distracted = 0
+
     while True:
 
         p, img = cap.read()
@@ -40,16 +52,30 @@ if __name__ == '__main__':
         frame_counter_haar += 1
         frame_counter_deep += 1
 
+
+
         #img = cv2.resize(img, (w, h))
 
         if frame_counter_haar == 5:
 
-            bboxes = aimanager.findFace(img)
+            bboxes, fo, dis = aimanager.findFace(img)
+
+            focus += fo
+            distracted += dis
 
             frame_counter_haar = 0
 
         if frame_counter_deep == 20:
             threading.Thread(target=process_frame, args=(img.copy(),)).start()
+            average_focus = int(focus/5)
+            average_dis = aimanager.students - average_focus
+
+            data = {"timestamp": int(time.time()), "focused": average_focus, "distracted": average_dis}
+
+            threading.Thread(target=data_process, args=(data,)).start()
+
+            focus, distracted = 0, 0
+
             frame_counter_deep = 0
 
         if bboxes is not None:

@@ -1,9 +1,10 @@
 import cv2
 class AiManager:
 
-    def __init__(self):
+    def __init__(self, st):
+        self.students = st
         self.faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-        print("sdf")
+
 
     def findFace(self, img):
 
@@ -24,10 +25,13 @@ class AiManager:
             cy = y + h // 2
             area = w * h
 
+        focused_students = len(bboxes)
+        distracted_students = self.students - focused_students
+
             #cv2.circle(img, (cx, cy), 5, (0, 255, 0), cv2.FILLED)
             #myFaceListC.append([cx, cy])
             #myFaceListArea.append(area)
 
-        return bboxes
+        return bboxes, focused_students, distracted_students
 
 
