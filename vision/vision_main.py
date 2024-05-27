@@ -7,12 +7,12 @@ import queue
 import random
 
 from deepface import DeepFace
-from AiManager import AiManager
-from DataManager import DataManager
-
+from vision.AiManager import AiManager
+from vision.DataManager import DataManager
+ 
 mongo = DataManager()
 
-aimanager = AiManager(5)
+aimanager = AiManager(3)
 
 
 shared_queue = queue.Queue()
@@ -64,7 +64,7 @@ def data_process(dic):
 
 if __name__ == '__main__':
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     frame_counter_haar = 0
     frame_counter_deep = 0
